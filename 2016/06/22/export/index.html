@@ -1,0 +1,675 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1.安装所需js fileSaver [Blob]
+ 安装基于npm,先确认安装了nodeJS。进入项目目录，在根目录下打开终端执行行以下代码 
+npm install file-saver --save
+bower install file-saver
+ 安装完成后可以看到在node_modules文件里新增的文件夹file-saver和filesaver 其中 filesaver文件夹为fil">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端导出excel/csv文件">
+<meta property="og:url" content="http://Jerry-FD.github.io/2016/06/22/export/index.html">
+<meta property="og:site_name" content="Jerry's blog">
+<meta property="og:description" content="1.安装所需js fileSaver [Blob]
+ 安装基于npm,先确认安装了nodeJS。进入项目目录，在根目录下打开终端执行行以下代码 
+npm install file-saver --save
+bower install file-saver
+ 安装完成后可以看到在node_modules文件里新增的文件夹file-saver和filesaver 其中 filesaver文件夹为fil">
+<meta property="og:updated_time" content="2016-06-23T08:40:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端导出excel/csv文件">
+<meta name="twitter:description" content="1.安装所需js fileSaver [Blob]
+ 安装基于npm,先确认安装了nodeJS。进入项目目录，在根目录下打开终端执行行以下代码 
+npm install file-saver --save
+bower install file-saver
+ 安装完成后可以看到在node_modules文件里新增的文件夹file-saver和filesaver 其中 filesaver文件夹为fil">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 前端导出excel/csv文件 | Jerry's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Jerry's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home web-icon" >
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about web-icon" >
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives web-icon" >
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags web-icon" >
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                前端导出excel/csv文件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-22T10:13:29+08:00" content="2016-06-22">
+              2016-06-22
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/22/export/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/22/export/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1-安装所需js"><a href="#1-安装所需js" class="headerlink" title="1.安装所需js"></a>1.安装所需js</h3><p> <a href="https://github.com/eligrey/FileSaver.js" target="_blank" rel="external">fileSaver</a><br> <a href="https://github.com/eligrey/Blob.js" target="_blank" rel="external">[Blob]</a></p>
+<p> 安装基于npm,先确认安装了nodeJS。进入项目目录，在根目录下打开终端执行行以下代码 </p>
+<p><code>npm install file-saver --save</code></p>
+<p><code>bower install file-saver</code></p>
+<p> 安装完成后可以看到在node_modules文件里新增的文件夹file-saver和filesaver 其中 filesaver文件夹为filesaver.js源码</p>
+<hr>
+<h3 id="2-引用fileSaver"><a href="#2-引用fileSaver" class="headerlink" title="2.引用fileSaver"></a>2.引用fileSaver</h3><p> 在需要下载导出页面对应的JS文件处引入filesaver文件</p>
+<p> <code>import FileSaver from &#39;file-saver&#39;;</code></p>
+<p><code>const {saveAs} = FileSaver;</code></p>
+<hr>
+<h3 id="3-新建Blob对象"><a href="#3-新建Blob对象" class="headerlink" title="3.新建Blob对象"></a>3.新建Blob对象</h3><blockquote>
+<p>BLOB (binary large object)，二进制大对象，是一个可以存储二进制文件的容器。(来自百度百科)</p>
+</blockquote>
+<p><code>var Blob = new Blob([&quot;JSON&quot;],{type:&#39;&#39;})</code></p>
+<h4 id="blob的结构"><a href="#blob的结构" class="headerlink" title="blob的结构"></a>blob的结构</h4><p>  Blob(blobParts[, options])</p>
+<p> 更多<a href="https://developer.mozilla.org/en-US/docs/Web/API/Blob" target="_blank" rel="external">Blob</a> 资料</p>
+<hr>
+<h3 id="4-引用saveAs"><a href="#4-引用saveAs" class="headerlink" title="4.引用saveAs"></a>4.引用saveAs</h3><p><code>saveAs(Blob,filename,boolean)</code></p>
+<p>第三个参数boolean如果传true filesaver.js就不会对你的文件自动设置类型</p>
+<blockquote>
+<p>new Blob有浏览器兼容问题，如需考虑浏览器兼容问题，需要引入<a href="https://github.com/eligrey/Blob.js" target="_blank" rel="external">Blob.js</a></p>
+</blockquote>
+<hr>
+<h3 id="5-demo"><a href="#5-demo" class="headerlink" title="5.demo"></a>5.demo</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Clickhandle</span> (<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> blob = <span class="keyword">new</span> Blob</span><br><span class="line">			(</span><br><span class="line">				[<span class="string">"Hello, world!"</span>], </span><br><span class="line">				&#123;type: <span class="string">"text/plain;charset=utf-8"</span>&#125;</span><br><span class="line">			);</span><br><span class="line">			</span><br><span class="line">	saveAs(blob, <span class="string">"hello world.txt"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意下载导出功能只能写在事情回调函数里，如某个button的onClick事件中</p>
+</blockquote>
+<hr>
+<h3 id="6-导出文件类型"><a href="#6-导出文件类型" class="headerlink" title="6.导出文件类型"></a>6.导出文件类型</h3><ul>
+<li>csv</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> exportContent = <span class="string">"\uFEFF"</span>;</span><br><span class="line"><span class="keyword">var</span> blob = <span class="keyword">new</span> Blob([exportContent+data(<span class="string">""</span>)], </span><br><span class="line">	&#123;type: <span class="string">"text/plain;charset=utf-8"</span>&#125;</span><br><span class="line">);</span><br><span class="line">saveAs(blob, downloadName + <span class="string">".csv"</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>excel</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> exportContent = <span class="string">"\uFEFF"</span>;</span><br><span class="line"><span class="keyword">var</span> blob = <span class="keyword">new</span> Blob([exportContent+data(<span class="string">""</span>)], &#123;</span><br><span class="line">            type: <span class="string">"application/vnd.ms-excel;charset=charset=utf-8"</span></span><br><span class="line">        &#125;);</span><br><span class="line">saveAs(blob, downloadName + <span class="string">".xls"</span>);</span><br></pre></td></tr></table></figure>
+<p>其中加入exportContent = “\uFEFF”;可以防止中文乱码</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/08/cookie/" rel="next" title="关于cookie的学习笔记">
+                <i class="fa fa-chevron-left"></i> 关于cookie的学习笔记
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/06/22/export/"
+     data-title="前端导出excel/csv文件"
+     data-content=""
+     data-url="http://Jerry-FD.github.io/2016/06/22/export/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/22/export/"
+           data-title="前端导出excel/csv文件" data-url="http://Jerry-FD.github.io/2016/06/22/export/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jerry_FD" />
+          <p class="site-author-name" itemprop="name">Jerry_FD</p>
+          <p class="site-description motion-element" itemprop="description">Something about me and my mind.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-安装所需js"><span class="nav-number">1.</span> <span class="nav-text">1.安装所需js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-引用fileSaver"><span class="nav-number">2.</span> <span class="nav-text">2.引用fileSaver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-新建Blob对象"><span class="nav-number">3.</span> <span class="nav-text">3.新建Blob对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#blob的结构"><span class="nav-number">3.1.</span> <span class="nav-text">blob的结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-引用saveAs"><span class="nav-number">4.</span> <span class="nav-text">4.引用saveAs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-demo"><span class="nav-number">5.</span> <span class="nav-text">5.demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-导出文件类型"><span class="nav-number">6.</span> <span class="nav-text">6.导出文件类型</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer" >
+      <div class="footer-inner">
+        <div class="copyright" style = "display:inline-block;width:100%;text-align:center; margin-bottom:5px">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-legal"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jerry_FD</span>
+</div>
+
+<div style = "border-bottom:1px dashed grey;margin-bottom:5px" ></div>
+
+  <div style = "float:left;  display:inline-block;width:25%" >
+    <span style><i class = "fa fa-weibo" style = "margin-right:10px"></i>微博：</span><a class = "weibo" href = "#">陌小狼_lzc</a><div id = "weibo-box"></div>
+  </div>
+  <div style = "float:left; display:inline-block;width:25%" >
+    <span style><i class = "fa fa-weixin" style = "margin-right:10px"></i>微信：</span><a class = "weixin" href = "#">liuzichenabc</a><div id = "weixin-box"></div>
+  </div>
+  <div style = "float:left; display:inline-block;width:25%" >
+    <span style><i class = "fa fa-github-alt" style = "margin-right:10px"></i>Github：</span><a href = "#">Jerry-FD</a>
+  </div>
+  <div style = "float:left;  display:inline-block;width:25%" >
+    <span style><i class = "fa fa-weibo" style = "margin-right:10px"></i>微博：</span><a href = "#">陌小狼_lzc</a>
+  </div>
+
+  <script>
+window.onload = function(){  // 在这里写你的代码...
+  console.log('welcom')
+   $(".weibo").mouseover(function(){
+      $('#weibo-box').removeClass('weibo-box-out')
+      $('#weibo-box').addClass('weibo-box')
+
+    })
+    $(".weibo").mouseout(function(){
+      $('#weibo-box').addClass('weibo-box-out')
+      $('#weibo-box').removeClass('weibo-box')
+    })
+
+       $(".weixin").mouseover(function(){
+      $('#weixin-box').removeClass('weixin-box-out')
+      $('#weixin-box').addClass('weixin-box')
+
+    })
+    $(".weixin").mouseout(function(){
+      $('#weixin-box').addClass('weixin-box-out')
+      $('#weixin-box').removeClass('weixin-box')
+    })
+
+
+}
+  </script>
+
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jerry-fd"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
