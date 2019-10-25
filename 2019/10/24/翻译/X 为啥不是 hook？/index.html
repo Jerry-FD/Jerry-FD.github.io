@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="React,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址：Why Isn’t X a Hook? 原文作者：Dan Abramov 译文出自：掘金翻译计划 本文永久链接：https://github.com/xitu/gold-miner/blob/master/TODO1/why-isnt-x-a-hook.md 译者：Jerry-FD 校对者：yoyoyohamapi, CoolRice   X 为啥不是 hook? 由读者翻译的版本：">
+<meta name="keywords" content="React">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「X 为啥不是 Hook？」">
+<meta property="og:url" content="http://yoursite.com/2019/10/24/翻译/X 为啥不是 hook？/index.html">
+<meta property="og:site_name" content="JerryFD">
+<meta property="og:description" content="原文地址：Why Isn’t X a Hook? 原文作者：Dan Abramov 译文出自：掘金翻译计划 本文永久链接：https://github.com/xitu/gold-miner/blob/master/TODO1/why-isnt-x-a-hook.md 译者：Jerry-FD 校对者：yoyoyohamapi, CoolRice   X 为啥不是 hook? 由读者翻译的版本：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-24T09:38:25.203Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="「X 为啥不是 Hook？」">
+<meta name="twitter:description" content="原文地址：Why Isn’t X a Hook? 原文作者：Dan Abramov 译文出自：掘金翻译计划 本文永久链接：https://github.com/xitu/gold-miner/blob/master/TODO1/why-isnt-x-a-hook.md 译者：Jerry-FD 校对者：yoyoyohamapi, CoolRice   X 为啥不是 hook? 由读者翻译的版本：">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/24/翻译/X 为啥不是 hook？/">
+
+
+
+
+
+  <title>「X 为啥不是 Hook？」 | JerryFD</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">JerryFD</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/翻译/X 为啥不是 hook？/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JerryFD">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JerryFD">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">「X 为啥不是 Hook？」</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T17:38:25+08:00">
+                2019-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/translate/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<ul>
+<li>原文地址：<a href="https://overreacted.io/why-isnt-x-a-hook/" target="_blank" rel="noopener">Why Isn’t X a Hook?</a></li>
+<li>原文作者：<a href="https://mobile.twitter.com/dan_abramov" target="_blank" rel="noopener">Dan Abramov</a></li>
+<li>译文出自：<a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a></li>
+<li>本文永久链接：<a href="https://github.com/xitu/gold-miner/blob/master/TODO1/why-isnt-x-a-hook.md" target="_blank" rel="noopener">https://github.com/xitu/gold-miner/blob/master/TODO1/why-isnt-x-a-hook.md</a></li>
+<li>译者：<a href="https://github.com/Jerry-FD" target="_blank" rel="noopener">Jerry-FD</a></li>
+<li>校对者：<a href="https://github.com/yoyoyohamapi" target="_blank" rel="noopener">yoyoyohamapi</a>, <a href="https://github.com/CoolRice" target="_blank" rel="noopener">CoolRice</a></li>
+</ul>
+</blockquote>
+<h1 id="X-为啥不是-hook"><a href="#X-为啥不是-hook" class="headerlink" title="X 为啥不是 hook?"></a>X 为啥不是 hook?</h1><blockquote>
+<p>由读者翻译的版本：<a href="https://overreacted.io/es/why-isnt-x-a-hook/" target="_blank" rel="noopener">西班牙语</a></p>
+</blockquote>
+<p>自 <a href="https://reactjs.org/hooks" target="_blank" rel="noopener">React Hooks</a> 第一个 alpha 版本发布以来, 这个问题一直被激烈讨论：“为什么 <strong>API</strong> 不是 hook？”</p>
+<p>你要知道，只有下面这几个<strong>算是</strong> hooks：</p>
+<ul>
+<li><a href="https://reactjs.org/docs/hooks-reference.html#usestate" target="_blank" rel="noopener"><code>useState()</code></a> 用来声明 state 变量</li>
+<li><a href="https://reactjs.org/docs/hooks-reference.html#useeffect" target="_blank" rel="noopener"><code>useEffect()</code></a> 用来声明副作用</li>
+<li><a href="https://reactjs.org/docs/hooks-reference.html#usecontext" target="_blank" rel="noopener"><code>useContext()</code></a> 用来读取一些上下文</li>
+</ul>
+<p>但是像 <code>React.memo()</code> 和 <code>&lt;Context.Provider&gt;</code>，这些 API 它们<strong>不是</strong> Hooks。一般来说，这些 Hook 版本的 API 被认为是 <strong>非组件化</strong> 或 <strong>反模块化</strong> 的。这篇文章将帮助你理解其中的原理。</p>
+<p><strong>注：这篇文章并非教你如何高效的使用 React，而是对 hooks API 饶有兴趣的开发者所准备的深入分析。</strong></p>
+<hr>
+<p>以下两个重要的属性是我们希望 React 的 APIs 应该拥有的：</p>
+<ol>
+<li><p><strong>可组合</strong>：<a href="https://reactjs.org/docs/hooks-custom.html" target="_blank" rel="noopener">Custom Hooks（自定义 Hooks）</a>极大程度上决定了 Hooks API 为何如此好用。我们希望开发者们经常使用自定义 hooks，这样就需要确保不同开发者所写的 hooks <a href="/why-do-hooks-rely-on-call-order/#flaw-4-the-diamond-problem">不会冲突</a>。（撰写干净并且不会相互冲突的组件实在太棒了）</p>
+</li>
+<li><p><strong>可调试</strong>：随着应用的膨胀，我们希望 bug 很<a href="/the-bug-o-notation/">容易被发现</a>。React 最棒的特性之一就是，当你发现某些渲染错误的时候，你可以顺着组件树寻找，直到找出是哪一个组件的 props 或 state 的值导致的错误。</p>
+</li>
+</ol>
+<p>有了这两个约束，我们就知道哪些算是真正意义上的 Hook，而哪些不算。</p>
+<hr>
+<h2 id="一个真正的-Hook-useState"><a href="#一个真正的-Hook-useState" class="headerlink" title="一个真正的 Hook: useState()"></a>一个真正的 Hook: <code>useState()</code></h2><h3 id="可组合"><a href="#可组合" class="headerlink" title="可组合"></a>可组合</h3><p>多个自定义 Hooks 各自调用 <code>useState()</code> 不会冲突：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">useMyCustomHook1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [value, setValue] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="comment">// 无论这里做了什么，它都只会作用在这里</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">useMyCustomHook2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [value, setValue] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="comment">// 无论这里做了什么，它都只会作用在这里</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MyComponent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  useMyCustomHook1();</span><br><span class="line">  useMyCustomHook2();</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>无限制的调用一个 <code>useState()</code> 总是安全的。在你声明新的状态量时，你不用理会其他组件用到的 Hooks，也不用担心状态量的更新会相互干扰。</p>
+<p><strong>结论:</strong> ✅ <code>useState()</code> 不会使自定义 Hooks 变得脆弱。</p>
+<h3 id="可调试"><a href="#可调试" class="headerlink" title="可调试"></a>可调试</h3><p>Hooks 非常好用，因为你可以在 Hooks <strong>之间</strong>传值:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">function useWindowWidth() &#123;</span><br><span class="line">  const [width, setWidth] = useState(window.innerWidth);</span><br><span class="line">  // ...</span><br><span class="line">  return width;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function useTheme(isMobile) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function Comment() &#123;</span><br><span class="line">  const width = useWindowWidth();</span><br><span class="line">  const isMobile = width &lt; MOBILE_VIEWPORT;</span><br><span class="line">  const theme = useTheme(isMobile);</span><br><span class="line">  return (</span><br><span class="line">    &lt;section className=&#123;theme.comment&#125;&gt;</span><br><span class="line">      &#123;/* ... */&#125;</span><br><span class="line">    &lt;/section&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是如果我们的代码出错了呢？我们又该怎么调试？</p>
+<p>我们先假设，从 <code>theme.comment</code> 拿到的 CSS 的 class 是错的。我们该怎么调试? 我们可以打一个断点或者在我们的组件体内加一些 log。</p>
+<p>我们可能会发现 <code>theme</code> 是错的，但是 <code>width</code> 和 <code>isMobile</code> 是对的。这会提示我们问题出在 <code>useTheme()</code> 内部。又或许我们发现 <code>width</code> 本身是错的。这可以指引我们去查看 <code>useWindowWidth()</code>。</p>
+<p><strong>简单看一下中间值就能指导我们哪个顶层的 Hooks 有 bug。</strong> 我们不需要挨个去查看他们<strong>所有的</strong>实现。</p>
+<p>这样，我们就能够洞察 bug 所在的部分，几次三番之后，程序问题终得其解。</p>
+<p>如果我们的自定义 Hook 嵌套的层级加深的时候，这一点就显得很重要了。假设一下我们有一个 3 层嵌套的自定义 Hook，每一层级的内部又用了 3 个不同的自定义 Hooks。在 <strong>3 处</strong>找bug和最多 <strong>3 + 3×3 + 3×3×3 = 39 处</strong>找 bug 的<a href="/the-bug-o-notation/">区别</a>是巨大的。幸运的是， <code>useState()</code> 不会魔法般的 “影响” 其他 Hooks 或组件。与任何 <code>useState()</code> 所返回的变量一样，一个可能造成 bug 的返回值也是有迹可循的。</p>
+<p><strong>结论:</strong> ✅ <code>useState()</code> 不会使你的代码逻辑变得模糊不清，我们可以直接沿着面包屑找到 bug。</p>
+<hr>
+<h2 id="它不是一个-Hook-useBailout"><a href="#它不是一个-Hook-useBailout" class="headerlink" title="它不是一个 Hook: useBailout()"></a>它不是一个 Hook: <code>useBailout()</code></h2><p>作为一个优化点，组件使用 Hooks 可以避免重复渲染（re-rendering）。</p>
+<p>其中一个方法是使用 <a href="https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactmemo" target="_blank" rel="noopener"><code>React.memo()</code></a> 包裹住整个组件。如果 props 和上次渲染完之后对比浅相等（shallowly equal），就可以避免重复渲染。这和 class 模式中的<code>PureComponent</code> 很像。</p>
+<p><code>React.memo()</code> 接受一个组件作为参数，并返回一个组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">function Button(props) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br><span class="line">export default React.memo(Button);</span><br></pre></td></tr></table></figure>
+
+<p><strong>但它为什么就不是 Hook？</strong></p>
+<p>不论你叫它 <code>useShouldComponentUpdate()</code>、<code>usePure()</code>、<code>useSkipRender()</code> 还是 <code>useBailout()</code>，它看起来都差不多长这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Button</span>(<span class="params">&#123; color &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ⚠️ 不是真正的 API</span></span><br><span class="line">  useBailout(<span class="function"><span class="params">prevColor</span> =&gt;</span> prevColor !== color, color);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;button className=&#123;<span class="string">'button-'</span> + color&#125;&gt;  </span><br><span class="line">      OK</span><br><span class="line">    &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">  )</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>还有一些其他的变种 (比如：一个简单的 <code>usePure()</code>) 但是大体上来说，他们都有一些相同的缺陷。</p>
+<h3 id="可组合-1"><a href="#可组合-1" class="headerlink" title="可组合"></a>可组合</h3><p>我们来试试把 <code>useBailout()</code> 放在 2 个自定义 Hooks 中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">function useFriendStatus(friendID) &#123;</span><br><span class="line">  const [isOnline, setIsOnline] = useState(null);</span><br><span class="line"></span><br><span class="line">  // ⚠️ 不是真正的 API</span><br><span class="line">  useBailout(prevIsOnline =&gt; prevIsOnline !== isOnline, isOnline);</span><br><span class="line"></span><br><span class="line">  useEffect(() =&gt; &#123;</span><br><span class="line">    const handleStatusChange = status =&gt; setIsOnline(status.isOnline);</span><br><span class="line">    ChatAPI.subscribe(friendID, handleStatusChange);</span><br><span class="line">    return () =&gt; ChatAPI.unsubscribe(friendID, handleStatusChange);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  return isOnline;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function useWindowWidth() &#123;</span><br><span class="line">  const [width, setWidth] = useState(window.innerWidth);</span><br><span class="line">  </span><br><span class="line">  // ⚠️ 不是真正的 API</span><br><span class="line">  useBailout(prevWidth =&gt; prevWidth !== width, width);</span><br><span class="line"></span><br><span class="line">  useEffect(() =&gt; &#123;</span><br><span class="line">    const handleResize = () =&gt; setWidth(window.innerWidth);</span><br><span class="line">    window.addEventListener(&apos;resize&apos;, handleResize);</span><br><span class="line">    return () =&gt; window.removeEventListener(&apos;resize&apos;, handleResize);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  return width;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>译注：使用了 <code>useBailout</code> 后，<code>useFriendStatus</code> 只会在 <code>isOnline</code> 状态变化时才允许 re-render，<code>useWindowWidth</code> 只会在 <code>width</code> 变化时才允许 re-render。</p>
+<p>现在如果你在同一个组件中同时用到他们会怎么样呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function ChatThread(&#123; friendID, isTyping &#125;) &#123;</span><br><span class="line">  const width = useWindowWidth();</span><br><span class="line">  const isOnline = useFriendStatus(friendID);</span><br><span class="line">  return (</span><br><span class="line">    &lt;ChatLayout width=&#123;width&#125;&gt;</span><br><span class="line">      &lt;FriendStatus isOnline=&#123;isOnline&#125; /&gt;</span><br><span class="line">      &#123;isTyping &amp;&amp; &apos;Typing...&apos;&#125;</span><br><span class="line">    &lt;/ChatLayout&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>什么时候会 re-render 呢?</p>
+<p>如果每一个 <code>useBailout()</code> 的调用都有能力跳过这次更新，如果 <code>useFriendStatus()</code> 阻止了 re-render，那么 <code>useWindowWidth</code> 就无法获得更新，反之亦然。<strong>这些 Hooks 会相互阻塞。</strong></p>
+<p>然而，在组件内部，倘若只有所有调用了 <code>useBailout()</code> 都同意不 re-render 组件才不会更新，那么当 props 中的 <code>isTyping</code> 改变时，由于内部所有 <code>useBailout()</code> 调用都没有同意更新，导致 <code>ChatThread</code> 也无法更新。</p>
+<p>基于这种假设，将导致更糟糕的局面，<strong>任何新置入组件的 Hooks</strong> 都需要去调用 <code>useBailout()</code>，不这样做的话，它们就无法投出“反对票”来让自己获得更新。</p>
+<p><strong>结论:</strong> 🔴 <code>useBailout()</code> 破坏了可组合性。添加一个 Hook 会破坏其他 Hooks 的状态更新。我们希望这些 APIs 是<a href="/optimized-for-change/">稳定的</a>，但是这个特性显然是与之相反了。</p>
+<h3 id="Debugging"><a href="#Debugging" class="headerlink" title="Debugging"></a>Debugging</h3><p><code>useBailout()</code> 对调试有什么影响呢？</p>
+<p>我们用相同的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ChatThread</span>(<span class="params">&#123; friendID, isTyping &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> width = useWindowWidth();</span><br><span class="line">  <span class="keyword">const</span> isOnline = useFriendStatus(friendID);</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;ChatLayout width=&#123;width&#125;&gt;</span><br><span class="line">      &lt;FriendStatus isOnline=&#123;isOnline&#125; /&gt;</span><br><span class="line">      &#123;isTyping &amp;&amp; <span class="string">'Typing...'</span>&#125;</span><br><span class="line">    &lt;<span class="regexp">/ChatLayout&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>事实上即使 prop 上层的某处改变了，<code>Typing...</code> 这个 label 也不会像我们期望的那样出现。那么我们怎么调试呢？</p>
+<p><strong>一般来说， 在 React 中你可以通过向</strong>上<strong>寻找的办法，自信的回答这个问题。</strong> 如果 <code>ChatThread</code> 没有得到新的 <code>isTyping</code> 的值， 我们可以打开那个渲染 <code>&lt;ChatThread isTyping={myVar} /&gt;</code> 的组件，检查 <code>myVar</code>，诸如此类。 在其中的某一层， 我们会发现要么是容易出错的 <code>shouldComponentUpdate()</code> 跳过了渲染, 要么是一个错误的 <code>isTyping</code> 的值被传递了下来。通常来说查看这条链路上的每个组件，已经足够定位到问题的来源了。</p>
+<p>然而, 假如这个 <code>useBailout()</code> 真是个 Hook，如果你不检查我们在 <code>ChatThread</code> 中用到的<strong>每一个自定义 Hook (深入地)</strong> 和在各自链路上的所有组件，你永远都不会知道跳过这次更新的原因。更因为任何父组件<em>也</em>可能会用到自定义 Hooks， 这个<a href="/the-bug-o-notation/">规模</a>很恐怖。</p>
+<p>这就像你要在抽屉里找一把螺丝刀，而每一层抽屉里都包含一堆小抽屉，你无法想象爱丽丝仙境中的兔子洞有多深。</p>
+<p><strong>结论</strong>：🔴 <code>useBailout()</code> 不仅破坏了可组合性，也极大的增加了调试的步骤和找 bug 过程的认知负担 — 某些时候，是指数级的。</p>
+<hr>
+<p>全文我们探讨了一个真正的 Hook，<code>useState()</code>，和一个不太算是 Hook 的 <code>useBailout()</code>，并从可组合性及可调试性两个方面说明了为什么一个是 Hook，而一个不算是 Hook。</p>
+<p>尽管现在没有 “Hook 版本的 <code>memo()</code> 或 <code>shouldComponentUpdate()</code>，但 React <strong>确实</strong>提供了一个名叫 <a href="https://reactjs.org/docs/hooks-reference.html#usememo" target="_blank" rel="noopener"><code>useMemo()</code></a> 的 Hook。它有类似的作用，但是他的语义不会迷惑使用它的人。</p>
+<p><code>useBailout()</code> 这个例子，描述了控制组件是否 re-render 并不适合做成一个 hook。这里还有一些其他的例子 - 例如，<code>useProvider()</code>， <code>useCatch()</code>，<code>useSuspense()</code>。</p>
+<p>现在你知道为什么某些 API 不算是 Hook 了吗？</p>
+<p><strong>(当你开始迷惑时，就提醒自己：可组合… 可调试)</strong></p>
+<p><a href="https://mobile.twitter.com/search?q=https%3A%2F%2Foverreacted.io%2Fwhy-isnt-x-a-hook%2F" target="_blank" rel="noopener">Discuss on Twitter</a> • <a href="https://github.com/gaearon/overreacted.io/edit/master/src/pages/why-isnt-x-a-hook/index.md" target="_blank" rel="noopener">Edit on GitHub</a></p>
+<blockquote>
+<p>如果发现译文存在错误或其他需要改进的地方，欢迎到 <a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a> 对译文进行修改并 PR，也可获得相应奖励积分。文章开头的 <strong>本文永久链接</strong> 即为本文在 GitHub 上的 MarkDown 链接。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a> 是一个翻译优质互联网技术文章的社区，文章来源为 <a href="https://juejin.im" target="_blank" rel="noopener">掘金</a> 上的英文分享文章。内容覆盖 <a href="https://github.com/xitu/gold-miner#android" target="_blank" rel="noopener">Android</a>、<a href="https://github.com/xitu/gold-miner#ios" target="_blank" rel="noopener">iOS</a>、<a href="https://github.com/xitu/gold-miner#前端" target="_blank" rel="noopener">前端</a>、<a href="https://github.com/xitu/gold-miner#后端" target="_blank" rel="noopener">后端</a>、<a href="https://github.com/xitu/gold-miner#区块链" target="_blank" rel="noopener">区块链</a>、<a href="https://github.com/xitu/gold-miner#产品" target="_blank" rel="noopener">产品</a>、<a href="https://github.com/xitu/gold-miner#设计" target="_blank" rel="noopener">设计</a>、<a href="https://github.com/xitu/gold-miner#人工智能" target="_blank" rel="noopener">人工智能</a>等领域，想要查看更多优质译文请持续关注 <a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a>、<a href="http://weibo.com/juejinfanyi" target="_blank" rel="noopener">官方微博</a>、<a href="https://zhuanlan.zhihu.com/juejinfanyi" target="_blank" rel="noopener">知乎专栏</a>。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/React/" rel="tag"># React</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/24/翻译/Google 的 Pagespeed 的工作原理：提升你的页面分数和搜索引擎排名/" rel="next" title="「Google 的 Pagespeed 的工作原理：提升你的页面分数和搜索引擎排名」">
+                <i class="fa fa-chevron-left"></i> 「Google 的 Pagespeed 的工作原理：提升你的页面分数和搜索引擎排名」
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/24/翻译/如何用 React Hooks 打造一个不到 100 行代码的异步表单校验库/" rel="prev" title="「如何用 React Hooks 打造一个不到 100 行代码的异步表单校验库」">
+                「如何用 React Hooks 打造一个不到 100 行代码的异步表单校验库」 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">JerryFD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#X-为啥不是-hook"><span class="nav-number">1.</span> <span class="nav-text">X 为啥不是 hook?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个真正的-Hook-useState"><span class="nav-number">1.1.</span> <span class="nav-text">一个真正的 Hook: useState()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可组合"><span class="nav-number">1.1.1.</span> <span class="nav-text">可组合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可调试"><span class="nav-number">1.1.2.</span> <span class="nav-text">可调试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#它不是一个-Hook-useBailout"><span class="nav-number">1.2.</span> <span class="nav-text">它不是一个 Hook: useBailout()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可组合-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">可组合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Debugging"><span class="nav-number">1.2.2.</span> <span class="nav-text">Debugging</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JerryFD</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

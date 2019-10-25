@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="前端,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址：The 80/20 Guide to JSON.stringify in JavaScript 原文作者：Valeri Karpov 译文出自：掘金翻译计划 本文永久链接：https://github.com/xitu/gold-miner/blob/master/TODO1/the-80-20-guide-to-json-stringify-in-javascript.md 译者：">
+<meta name="keywords" content="前端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「JavaScript 中 JSON.stringify 的二八法则」">
+<meta property="og:url" content="http://yoursite.com/2019/10/24/翻译/JavaScript 中 JSON.stringify 的二八法则/index.html">
+<meta property="og:site_name" content="JerryFD">
+<meta property="og:description" content="原文地址：The 80/20 Guide to JSON.stringify in JavaScript 原文作者：Valeri Karpov 译文出自：掘金翻译计划 本文永久链接：https://github.com/xitu/gold-miner/blob/master/TODO1/the-80-20-guide-to-json-stringify-in-javascript.md 译者：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-24T09:38:25.203Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="「JavaScript 中 JSON.stringify 的二八法则」">
+<meta name="twitter:description" content="原文地址：The 80/20 Guide to JSON.stringify in JavaScript 原文作者：Valeri Karpov 译文出自：掘金翻译计划 本文永久链接：https://github.com/xitu/gold-miner/blob/master/TODO1/the-80-20-guide-to-json-stringify-in-javascript.md 译者：">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/24/翻译/JavaScript 中 JSON.stringify 的二八法则/">
+
+
+
+
+
+  <title>「JavaScript 中 JSON.stringify 的二八法则」 | JerryFD</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">JerryFD</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/翻译/JavaScript 中 JSON.stringify 的二八法则/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JerryFD">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JerryFD">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">「JavaScript 中 JSON.stringify 的二八法则」</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T17:38:25+08:00">
+                2019-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/translate/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<ul>
+<li>原文地址：<a href="http://thecodebarbarian.com/the-80-20-guide-to-json-stringify-in-javascript.html" target="_blank" rel="noopener">The 80/20 Guide to JSON.stringify in JavaScript</a></li>
+<li>原文作者：<a href="http://www.twitter.com/code_barbarian" target="_blank" rel="noopener">Valeri Karpov</a></li>
+<li>译文出自：<a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a></li>
+<li>本文永久链接：<a href="https://github.com/xitu/gold-miner/blob/master/TODO1/the-80-20-guide-to-json-stringify-in-javascript.md" target="_blank" rel="noopener">https://github.com/xitu/gold-miner/blob/master/TODO1/the-80-20-guide-to-json-stringify-in-javascript.md</a></li>
+<li>译者：<a href="https://github.com/Jerry-FD" target="_blank" rel="noopener">JerryFD</a></li>
+<li>校对者：<a href="https://github.com/Usey95" target="_blank" rel="noopener">Usey95</a>，<a href="https://github.com/mnikn" target="_blank" rel="noopener">mnikn</a></li>
+</ul>
+</blockquote>
+<h1 id="JavaScript-中-JSON-stringify-的二八法则"><a href="#JavaScript-中-JSON-stringify-的二八法则" class="headerlink" title="JavaScript 中 JSON.stringify 的二八法则"></a>JavaScript 中 JSON.stringify 的二八法则</h1><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" target="_blank" rel="noopener">函数 <code>JSON.stringify()</code></a> 是一个把 JavaScript object 转换成 <a href="https://www.json.org/" target="_blank" rel="noopener">JSON</a> 的标准方法。很多 JavaScript 框架在底层都使用了 <code>JSON.stringify()</code>，例如：<a href="http://expressjs.com/en/4x/api.html#res.json" target="_blank" rel="noopener">Express’ <code>res.json()</code></a>、<a href="https://github.com/axios/axios#example" target="_blank" rel="noopener">Axios’ <code>post()</code></a> 和 <a href="https://webpack.js.org/configuration/stats/" target="_blank" rel="noopener">Webpack stats</a> 都在底层调用了 <code>JSON.stringify()</code>。这篇文章会提供一个实用的、包含异常情况的 <code>JSON.stringify()</code> 的概述。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>几乎所有现代的 JavaScript 运行环境都支持 <code>JSON.stringify()</code>。甚至 IE 浏览器自从 <a href="https://blogs.msdn.microsoft.com/ie/2008/09/10/native-json-in-ie8/" target="_blank" rel="noopener">IE8 起就支持JSON.stringify()</a>。下面是一个把普通的 object 转换成 JSON 的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">answer</span>: <span class="number">42</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> str = <span class="built_in">JSON</span>.stringify(obj);</span><br><span class="line">str; <span class="comment">// '&#123;"answer":42&#125;'</span></span><br><span class="line"><span class="keyword">typeof</span> str; <span class="comment">// 'string'</span></span><br></pre></td></tr></table></figure>
+
+<p>如你所见，下面的例子是 <code>JSON.stringify()</code> 和 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse" target="_blank" rel="noopener"><code>JSON.parse()</code></a> 一起使用的。这种写法可以用来<a href="https://flaviocopes.com/how-to-clone-javascript-object/#json-serialization" target="_blank" rel="noopener">深拷贝 JavaScript 对象</a>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">answer</span>: <span class="number">42</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> clone = <span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(obj));</span><br><span class="line"></span><br><span class="line">clone.answer; <span class="comment">// 42</span></span><br><span class="line">clone === obj; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="错误和边界处理"><a href="#错误和边界处理" class="headerlink" title="错误和边界处理"></a>错误和边界处理</h2><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Exceptions" target="_blank" rel="noopener">如果 <code>JSON.stringify()</code> 的参数是 cyclical object，则会抛出一个错误</a>。也就是说，如果对象 <code>obj</code> 有一个属性，这个属性的值是 <code>obj</code> 本身，那么 <code>JSON.stringify()</code> 会抛出一个错误。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;&#125;;</span><br><span class="line"><span class="comment">// 循环 object 指向它自身</span></span><br><span class="line">obj.prop = obj;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 抛出 "TypeError: TypeError: Converting circular structure to JSON"</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj);</span><br></pre></td></tr></table></figure>
+
+<p>这是 <code>JSON.stringify()</code> 唯一抛出异常的场景，除非你使用自定义的 <code>toJSON()</code> 函数或者使用替代函数（replacer）。然而即便这样，你也还是得把 <code>JSON.stringify()</code> 包在 <code>try/catch</code> 里调用，因为循环 objects 还是可能会出现。</p>
+<p>还有很多边界场景 <code>JSON.stringify()</code> 不会抛出异常，但其结果可能不如你所想。比如，<code>JSON.stringify()</code> 会把 <code>NaN</code> 和 <code>Infinity</code> 转换成 <code>null</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">nan</span>: <span class="built_in">parseInt</span>(<span class="string">'not a number'</span>), <span class="attr">inf</span>: <span class="built_in">Number</span>.POSITIVE_INFINITY &#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj); <span class="comment">// '&#123;"nan":null,"inf":null&#125;'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>JSON.stringify()</code> 也会把属性值为函数或者 <code>undefined</code> 的内容干掉：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">fn</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;, <span class="attr">undef</span>: <span class="literal">undefined</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 空 object `JSON.stringify()` 过滤 functions 和 `undefined`。</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj); <span class="comment">// '&#123;&#125;'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="优化输出"><a href="#优化输出" class="headerlink" title="优化输出"></a>优化输出</h2><p><code>JSON.stringify()</code> 的第一个参数是要被序列化成 JSON 的 object。实际上 <code>JSON.stringify()</code> 接受 3 个参数，第三个参数 <code>spaces</code>（译注：空隙）。参数 <code>spaces</code> 用来将 JSON 格式化输出成方便阅读的格式。</p>
+<p>参数 <code>spaces</code> 可以是 string 或 number。如果 <code>spaces</code> 不是 undefined，那么<code>JSON.stringify()</code> 则会把 JSON 中的每一个 key 单独作为一行输出，并且加上 <code>spaces</code> 的前缀。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: <span class="number">2</span>, <span class="attr">c</span>: <span class="number">3</span>, <span class="attr">d</span>: &#123; <span class="attr">e</span>: <span class="number">4</span> &#125; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// '&#123;"a":1,"b":2,"c":3,"d":&#123;"e":4&#125;&#125;'</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj);</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">//   "a": 1,</span></span><br><span class="line"><span class="comment">//   "b": 2,</span></span><br><span class="line"><span class="comment">//   "c": 3,</span></span><br><span class="line"><span class="comment">//   "d": &#123;</span></span><br><span class="line"><span class="comment">//     "e": 4</span></span><br><span class="line"><span class="comment">//   &#125;</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj, <span class="literal">null</span>, <span class="string">'  '</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 2 个空格来格式化 JSON 输出。和上面的例子等价。</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj, <span class="literal">null</span>, <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<p>把参数 <code>spaces</code> 作为字符串使用时，虽然在实际场景中大多是使用空格，但其实不限制必须全是空格。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">// __"a": 1,</span></span><br><span class="line"><span class="comment">// __"b": 2,</span></span><br><span class="line"><span class="comment">// __"c": 3,</span></span><br><span class="line"><span class="comment">// __"d": &#123;</span></span><br><span class="line"><span class="comment">// ____"e": 4</span></span><br><span class="line"><span class="comment">// __&#125;</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj, <span class="literal">null</span>, <span class="string">'__'</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Replacers"><a href="#Replacers" class="headerlink" title="Replacers"></a>Replacers</h2><p><code>JSON.stringify()</code> 的第二个参数是 <code>replacer</code> 函数。在上面的例子中，<code>replacer</code> 是 <code>null</code>。JavaScript 针对 object 中的每一个 key/value 对都会调用 replacer 函数，使用函数的返回值作为属性的值。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: <span class="number">2</span>, <span class="attr">c</span>: <span class="number">3</span>, <span class="attr">d</span>: &#123; <span class="attr">e</span>: <span class="number">4</span> &#125; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// `replacer` 使每个数字的值加 1。输出：</span></span><br><span class="line"><span class="comment">// '&#123;"a":2,"b":3,"c":4,"d":&#123;"e":5&#125;&#125;'</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj, <span class="function"><span class="keyword">function</span> <span class="title">replacer</span>(<span class="params">key, value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> value === <span class="string">'number'</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> value + <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>替代函数（译注：replacer）在过滤敏感词的场景非常有用。例如，假设你想过滤所有<a href="https://masteringjs.io/tutorials/fundamentals/contains-substring#case-insensitive-search" target="_blank" rel="noopener">包含 ‘password’ 及 ‘password’ 子字符串的 keys</a>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">  name: <span class="string">'Jean-Luc Picard'</span>,</span><br><span class="line">  password: <span class="string">'stargazer'</span>,</span><br><span class="line">  nested: &#123;</span><br><span class="line">    hashedPassword: <span class="string">'c3RhcmdhemVy'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// '&#123;"name":"Jean-Luc Picard","nested":&#123;&#125;&#125;'</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj, <span class="function"><span class="keyword">function</span> <span class="title">replacer</span>(<span class="params">key, value</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 这个函数会被调用 5 次。 `key` 等于：</span></span><br><span class="line">  <span class="comment">// '', 'name', 'password', 'nested', 'hashedPassword'</span></span><br><span class="line">  <span class="keyword">if</span> (key.match(<span class="regexp">/password/i</span>)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="函数-toJSON"><a href="#函数-toJSON" class="headerlink" title="函数 toJSON()"></a>函数 <code>toJSON()</code></h2><p><code>JSON.stringify()</code> 函数会遍历 object 寻找含有 <code>toJSON()</code> 函数的属性。如果它找到了 <code>toJSON()</code> 函数，<code>JSON.stringify()</code> 会调用 <code>toJSON()</code> 函数，并使用其返回值作为替代。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">  name: <span class="string">'Jean-Luc Picard'</span>,</span><br><span class="line">  nested: &#123;</span><br><span class="line">    test: <span class="string">'not in output'</span>,</span><br><span class="line">    toJSON: <span class="function"><span class="params">()</span> =&gt;</span> <span class="string">'test'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// '&#123;"name":"Jean-Luc Picard","nested":"test"&#125;'</span></span><br><span class="line"><span class="built_in">JSON</span>.stringify(obj);</span><br></pre></td></tr></table></figure>
+
+<p>函数 <code>toJSON()</code> 可以返回任何值，包括对象、原始类型的值，甚至 <code>undefined</code>。如果 <code>toJSON()</code> 返回 <code>undefined</code>，<code>JSON.stringify()</code> 会忽略这个属性。</p>
+<p>许多 JavaScript 模块使用 <code>toJSON()</code> 这一特性来保证复杂的对象能被正确的序列化。比如 <a href="https://mongoosejs.com/docs/api.html#document_Document-toJSON" target="_blank" rel="noopener">Mongoose documents</a> 和 <a href="https://momentjs.com/docs/#/displaying/as-json/" target="_blank" rel="noopener">Moment objects</a>。</p>
+<h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p> 函数 <code>JSON.stringify()</code> 是 JavaScript 基础的核心。许多库和框架在底层都使用了它，所以对 <code>JSON.stringify()</code> 的扎实理解，可以帮助更好的学习你感兴趣的 npm 模块。比如，针对你的 Express REST API，可以借用自定义 <code>toJSON()</code> 函数的能力来处理原生的 <code>Date</code> 类，以此实现一个<a href="https://masteringjs.io/tutorials/fundamentals/date_format" target="_blank" rel="noopener">日期格式化</a> 的替代方案，或者，当使用 Axios 发送 HTTP 请求时，确保客户端的循环对象能被正确的转换成 JSON。（译注：帕累托法则即 80/20 Rule，一般指 20% 的输入，决定 80% 的结果的现象。）</p>
+<blockquote>
+<p>如果发现译文存在错误或其他需要改进的地方，欢迎到 <a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a> 对译文进行修改并 PR，也可获得相应奖励积分。文章开头的 <strong>本文永久链接</strong> 即为本文在 GitHub 上的 MarkDown 链接。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a> 是一个翻译优质互联网技术文章的社区，文章来源为 <a href="https://juejin.im" target="_blank" rel="noopener">掘金</a> 上的英文分享文章。内容覆盖 <a href="https://github.com/xitu/gold-miner#android" target="_blank" rel="noopener">Android</a>、<a href="https://github.com/xitu/gold-miner#ios" target="_blank" rel="noopener">iOS</a>、<a href="https://github.com/xitu/gold-miner#前端" target="_blank" rel="noopener">前端</a>、<a href="https://github.com/xitu/gold-miner#后端" target="_blank" rel="noopener">后端</a>、<a href="https://github.com/xitu/gold-miner#区块链" target="_blank" rel="noopener">区块链</a>、<a href="https://github.com/xitu/gold-miner#产品" target="_blank" rel="noopener">产品</a>、<a href="https://github.com/xitu/gold-miner#设计" target="_blank" rel="noopener">设计</a>、<a href="https://github.com/xitu/gold-miner#人工智能" target="_blank" rel="noopener">人工智能</a>等领域，想要查看更多优质译文请持续关注 <a href="https://github.com/xitu/gold-miner" target="_blank" rel="noopener">掘金翻译计划</a>、<a href="http://weibo.com/juejinfanyi" target="_blank" rel="noopener">官方微博</a>、<a href="https://zhuanlan.zhihu.com/juejinfanyi" target="_blank" rel="noopener">知乎专栏</a>。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/前端/" rel="tag"># 前端</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/12/总结/高清方案/" rel="next" title="「高清方案」">
+                <i class="fa fa-chevron-left"></i> 「高清方案」
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/24/翻译/Google 的 Pagespeed 的工作原理：提升你的页面分数和搜索引擎排名/" rel="prev" title="「Google 的 Pagespeed 的工作原理：提升你的页面分数和搜索引擎排名」">
+                「Google 的 Pagespeed 的工作原理：提升你的页面分数和搜索引擎排名」 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">JerryFD</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JavaScript-中-JSON-stringify-的二八法则"><span class="nav-number">1.</span> <span class="nav-text">JavaScript 中 JSON.stringify 的二八法则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-number">1.1.</span> <span class="nav-text">开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误和边界处理"><span class="nav-number">1.2.</span> <span class="nav-text">错误和边界处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化输出"><span class="nav-number">1.3.</span> <span class="nav-text">优化输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Replacers"><span class="nav-number">1.4.</span> <span class="nav-text">Replacers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数-toJSON"><span class="nav-number">1.5.</span> <span class="nav-text">函数 toJSON()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后续"><span class="nav-number">1.6.</span> <span class="nav-text">后续</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JerryFD</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
